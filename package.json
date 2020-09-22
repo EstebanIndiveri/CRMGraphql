@@ -5,13 +5,14 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon .",
+    "dev": "nodemon *",
     "start": "node ."
   },
   "author": "Esteban Indiveri",
   "license": "ISC",
   "dependencies": {
     "apollo-server": "^2.17.0",
+    "bcryptjs": "^2.4.3",
     "dotenv": "^8.2.0",
     "mongoose": "^5.10.6"
   },
