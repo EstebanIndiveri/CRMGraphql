@@ -158,8 +158,15 @@ const resolvers={
         actualizarCliente:async(_,{id,input},ctx)=>{
 
             //existe
-
-            //vend
+            let cliente = await Cliente.findById(id);
+            if(!cliente){
+                throw new Error('Cliente no existente');
+            }
+            if(cliente.vendedor.toString() !== ctx.usuario.id){
+                throw new Error('No tienes acceso')
+            }
+            cliente=await Cliente.findOneAndUpdate({_id,id},input,{new:true});
+            return cliente;
         }
     }
 }
