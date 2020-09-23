@@ -1,5 +1,6 @@
 const Usuario = require("../models/Usuario");
 const Product = require("../models/Product");
+const Cliente = require("../models/Cliente");
 const bcrypt=require('bcryptjs');
 const jwt=require('jsonwebtoken');
 require('dotenv').config({path:'variables.env'});
@@ -31,6 +32,41 @@ const resolvers={
                 throw new Error('Producto no encontrado')
             }
             return producto;
+        },
+        obtenerClientes:async()=>{
+            try {
+                const clientes=await Cliente.find({});
+                if(!clientes){
+                    console.log("No se encontraron clientes");
+                }
+                return clientes
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        obtenerClientesVendedor:async(_,{},ctx)=>{
+            try {
+                const clientes=await Cliente.find({vendedor:ctx.usuario.id.toString()});
+                return clientes;
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        obtenerCliente:async(_,{id},ctx)=>{
+            try {
+                const cliente=await Cliente.findById(id);
+                if(!cliente){
+                    throw new Error('Cliente no encontrado')
+                }
+
+                if(cliente.vendedor.toString() !== ctx.usuario.id){
+                    throw new Error('No tienes acceso')
+                }
+                return cliente;
+
+            } catch (error) {
+                console.log(error);
+            }
         }
     },
     Mutation:{
@@ -97,6 +133,33 @@ const resolvers={
             }
             await Product.findOneAndDelete({_id:id});
             return "Producto eliminado";
+        },
+        nuevoCliente:async(_,{input},ctx)=>{
+            const{email}=input
+            //cliente registrad
+            console.log(ctx);
+            console.log(input);
+            const cliente=await Cliente.findOne({email});
+            if(cliente){
+                throw new Error('Cliente ya registrado');
+            }
+            //asignad vendedor
+            const nuevoCliente=new Cliente(input);
+            nuevoCliente.vendedor=ctx.usuario.id;
+
+            try {
+                const res=await nuevoCliente.save();
+                return res;
+                
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        actualizarCliente:async(_,{id,input},ctx)=>{
+
+            //existe
+
+            //vend
         }
     }
 }
