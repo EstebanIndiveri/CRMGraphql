@@ -69,6 +69,35 @@ const resolvers={
             } catch (error) {
                 console.log(error);
             }
+        },
+        obtenerPedidos:async()=>{
+            try {
+                const pedidos= await Pedido.find({});
+                return pedidos;
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        obtenerPedidosVendedor:async(_,{},ctx)=>{
+            try {
+                const pedidos=await Pedido.find({vendedor:ctx.usuario.id});
+                return pedidos;
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        obtenerPedido:async(_,{id},ctx)=>{
+            //verify 
+            const pedido=await Pedido.findById(id);
+            if(!pedido){
+                throw new Error('Pedido no encontrado');
+            }
+            //quien lo creo lo ve
+            if(pedido.vendedor.toString()!==ctx.usuario.id){
+                throw new Error('acción no permitida');
+            }
+            //return res
+            return pedido;
         }
     },
     Mutation:{
