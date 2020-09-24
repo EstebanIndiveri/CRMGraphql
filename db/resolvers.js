@@ -98,7 +98,12 @@ const resolvers={
             }
             //return res
             return pedido;
-        }
+        },
+       obtenerPedidosEstado:async(_,{estado},ctx)=>{
+        const pedidos=await Pedido.find({vendedor:ctx.usuario.id,estado});
+        return pedidos;
+       }
+
     },
     Mutation:{
         nuevoUsuario:async(_,{input})=>{
@@ -243,6 +248,57 @@ const resolvers={
             //save Db
             const result=await nuevoPedido.save();
             return result;
+        },
+        actualizarPedido:async(_,{id,input},ctx)=>{
+            const {cliente}=input;
+            try {
+                //pedido exists
+                const existePedido=await Pedido.findById(id);
+                if(!existePedido){
+                    throw new Error('El pedido no existe');
+                }
+                //cliente exis
+                const existeCliente=await Cliente.findById(cliente);
+                if(!existeCliente){
+                    throw new Error('Cliente no existente')
+                }
+                //cliente y pedido pertenece al vendedor
+                if(existeCliente.vendedor.toString()!==ctx.usuario.id){
+                    throw new Error('no tiene acceso');
+                }
+                //revisar stock
+                if(input.pedido){
+                    for await (const articulo of input.pedido) {
+                        const{id}=articulo;
+    
+                        const producto=await Product.findById(id);
+                        if(articulo.cantidad>producto.existencia){
+                            throw new Error(`El articulo ${producto.nombre} excede el stock disponible`)
+                        }else{
+                            producto.existencia=producto.existencia-articulo.cantidad;
+                            await producto.save();
+                        }
+                    }
+                }
+                //save
+                const result=await Pedido.findOneAndUpdate({_id:id},input,{new:true});
+                return result;
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        eliminarPedido:async(_,{id},ctx)=>{
+            //verify
+            const pedido=await Pedido.findById(id);
+            if(!pedido){
+                throw new Error('El pedido no existe');
+            }
+            //vendedor borra
+            if(pedido.vendedor.toString()!==ctx.usuario.id){
+                throw new Error('Acceso restringido');
+            }
+            await Pedido.findOneAndDelete({_id:id});
+            return '¡Pedido Eliminado!';
         }
     }
 }

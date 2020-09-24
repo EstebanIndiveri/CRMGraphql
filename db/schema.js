@@ -71,8 +71,8 @@ input PedidoProductoInput {
 }
 input PedidoInput {
     pedido:[PedidoProductoInput]
-    total:Float!
-    cliente:ID!
+    total:Float
+    cliente:ID
     estado:EstadoPedido
 }
 enum EstadoPedido{
@@ -97,6 +97,8 @@ enum EstadoPedido{
         obtenerPedidos:[Pedido]
         obtenerPedidosVendedor:[Pedido]
         obtenerPedido(id:ID!):Pedido
+        obtenerPedidosEstado(estado:String!):[Pedido]
+
    }
    type Mutation{
        #usuarios
@@ -115,6 +117,8 @@ enum EstadoPedido{
 
        #Pedidos
        nuevoPedido(input:PedidoInput):Pedido
+       actualizarPedido(id:ID!,input:PedidoInput):Pedido
+       eliminarPedido(id:ID!):String
    }
    
 `;
