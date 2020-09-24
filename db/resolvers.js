@@ -182,7 +182,17 @@ const resolvers={
             return 'Cliente Eliminado'
         },
         nuevoPedido:async(_,{input},ctx)=>{
+            const {cliente}=input;
             //cliente or not
+            let clienteExiste = await Cliente.findById(cliente);
+
+            if(!clienteExiste){
+                throw new Error('Cliente no existente');
+            }
+            //cliente es del vendedor
+            if(clienteExiste.vendedor.toString() !== ctx.usuario.id){
+                throw new Error('No tiene accesso');
+            }
         }
     }
 }
