@@ -165,8 +165,24 @@ const resolvers={
             if(cliente.vendedor.toString() !== ctx.usuario.id){
                 throw new Error('No tienes acceso')
             }
-            cliente=await Cliente.findOneAndUpdate({_id,id},input,{new:true});
+            cliente=await Cliente.findOneAndUpdate({_id:id},input,{new:true});
             return cliente;
+        },
+        eliminarCliente:async(_,{id},ctx)=>{
+
+            let cliente = await Cliente.findById(id);
+
+            if(!cliente){
+                throw new Error('Cliente no existente');
+            }
+            if(cliente.vendedor.toString() !== ctx.usuario.id){
+                throw new Error('No tienes acceso')
+            }
+            await Cliente.findOneAndDelete({_id:id});
+            return 'Cliente Eliminado'
+        },
+        nuevoPedido:async(_,{input},ctx)=>{
+            //cliente or not
         }
     }
 }
