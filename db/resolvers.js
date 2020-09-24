@@ -1,6 +1,8 @@
 const Usuario = require("../models/Usuario");
 const Product = require("../models/Product");
 const Cliente = require("../models/Cliente");
+const Pedido = require("../models/Pedido");
+
 const bcrypt=require('bcryptjs');
 const jwt=require('jsonwebtoken');
 require('dotenv').config({path:'variables.env'});
@@ -193,6 +195,25 @@ const resolvers={
             if(clienteExiste.vendedor.toString() !== ctx.usuario.id){
                 throw new Error('No tiene accesso');
             }
+            for await(const articulo of input.pedido){
+                const{id}=articulo;
+                const producto =await Product.findById(id);
+                // console.log(producto);
+                if(articulo.cantidad>producto.existencia){
+                    throw new Error(`Articulo ${producto.nombre} excede la cantidad disponible`);
+                }else{
+                    //resta cantidad a disp
+                    producto.existencia=producto.existencia-articulo.cantidad;
+                    await producto.save();
+                }
+            };
+            //crear pedido
+            const nuevoPedido=new Pedido(input);
+            //asigna vendedor
+            nuevoPedido.vendedor=ctx.usuario.id;
+            //save Db
+            const result=await nuevoPedido.save();
+            return result;
         }
     }
 }
