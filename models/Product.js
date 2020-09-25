@@ -21,5 +21,6 @@ creado:{
     default:Date.now()
 }
 });
+ProductoSchema.index({nombre:'text'});
 
 module.exports=mongoose.model('Producto',ProductoSchema)

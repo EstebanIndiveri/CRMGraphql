@@ -43,6 +43,14 @@ type PedidoGrupo{
     id:ID
     cantidad:Int
 }
+type TopCliente{
+    total:Float
+    cliente:[Cliente]
+}
+type TopVendedor{
+    total:Float
+    vendedor:[Usuario]
+}
 input UsuarioInput{
     nombre:String!
     apellido:String!
@@ -98,6 +106,12 @@ enum EstadoPedido{
         obtenerPedidosVendedor:[Pedido]
         obtenerPedido(id:ID!):Pedido
         obtenerPedidosEstado(estado:String!):[Pedido]
+
+        #Busqueda avanzada
+        
+        mejoresClientes:[TopCliente]
+        mejoresVendedores:[TopVendedor]
+        buscarProducto(texto:String!):[Producto]
 
    }
    type Mutation{
