@@ -34,7 +34,7 @@ type Pedido{
     id:ID
     pedido:[PedidoGrupo]
     total:Float
-    cliente:ID
+    cliente:Cliente
     vendedor:ID
     fecha:String
     estado:EstadoPedido
@@ -42,6 +42,8 @@ type Pedido{
 type PedidoGrupo{
     id:ID
     cantidad:Int
+    nombre:String
+    precio:Float
 }
 type TopCliente{
     total:Float
@@ -76,6 +78,8 @@ input ClienteInput {
 input PedidoProductoInput {
     id:ID
     cantidad:Int
+    nombre:String
+    precio:Float
 }
 input PedidoInput {
     pedido:[PedidoProductoInput]
