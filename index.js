@@ -32,6 +32,6 @@ const server=new ApolloServer({
 });
 
 //arranca server
-server.listen().then(({url})=>{
+server.listen({port:process.env.PORT || 4000}).then(({url})=>{
     console.log(`Servidor corriendo en ${url}`);
 })
